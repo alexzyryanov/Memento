@@ -32,7 +32,7 @@ public protocol MementoCompatibleValue {}
 
 extension MementoCompatibleValue {
     public var memento: MementoWrapper<Self> {
-        get { return MementoWrapper(self) }
+        get { MementoWrapper(self) }
         set { }
     }
 }
