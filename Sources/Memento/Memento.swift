@@ -2,6 +2,12 @@ import UIKit
 
 extension MementoWrapper where Base: UIImageView {
     @MainActor public func setImage(with url: String) {
+        base.subviews.forEach { subview in
+            if subview is UIActivityIndicatorView {
+                subview.removeFromSuperview()
+            }
+        }
+        
         let activityIndicator = UIActivityIndicatorView(style: .medium)
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         activityIndicator.startAnimating()
@@ -23,13 +29,11 @@ extension MementoWrapper where Base: UIImageView {
                 return
             }
             
-            activityIndicator.stopAnimating()
-            activityIndicator.removeFromSuperview()
-            
-            base.alpha = 0.0
-            base.image = await MementoManager.shared.getImage(from: url)
-            UIView.animate(withDuration: 0.3) {
-                base.alpha = 1.0
+            let image = await MementoManager.shared.getImage(from: url)
+            await MainActor.run {
+                activityIndicator.stopAnimating()
+                activityIndicator.removeFromSuperview()
+                base.image = image
             }
         }
     }
