@@ -5,25 +5,44 @@
 //  Created by Alexander Zyryanov on 19.09.2025.
 //
 
-import Foundation
 import UIKit
 
-protocol MementoCacheProtocol {
-    func saveObject(_ image: UIImage, for key: String)
-    func loadObject(for key: String) -> UIImage?
+protocol MementoCacheProtocol: Sendable {
+    func set(_ image: UIImage, forKey key: String) async
+    func set(_ image: UIImage, forKey key: URL) async
+    func get(forKey key: String) async -> UIImage?
+    func get(forKey key: URL) async -> UIImage?
 }
 
-final class MementoCache: @unchecked Sendable, MementoCacheProtocol {
-    static let shared: MementoCache = MementoCache()
-    private let nsCache: NSCache<NSString, UIImage> = NSCache<NSString, UIImage>()
+actor MementoCache: MementoCacheProtocol {
+    static let shared = MementoCache()
+    private let nsCache = NSCache<NSString, UIImage>()
     
     private init() {}
     
-    func saveObject(_ image: UIImage, for key: String) {
-        nsCache.setObject(image, forKey: key as NSString)
+    private func setObject(_ image: UIImage, forKey key: NSString) {
+        nsCache.setObject(image, forKey: key)
     }
     
-    func loadObject(for key: String) -> UIImage? {
-        nsCache.object(forKey: key as NSString)
+    private func getObject(forKey key: NSString) -> UIImage? {
+        nsCache.object(forKey: key)
+    }
+}
+
+extension MementoCache {
+    func set(_ image: UIImage, forKey key: String) {
+        setObject(image, forKey: key as NSString)
+    }
+    
+    func set(_ image: UIImage, forKey key: URL) {
+        setObject(image, forKey: key.absoluteString as NSString)
+    }
+    
+    func get(forKey key: String) -> UIImage? {
+        getObject(forKey: key as NSString)
+    }
+    
+    func get(forKey key: URL) -> UIImage? {
+        getObject(forKey: key.absoluteString as NSString)
     }
 }

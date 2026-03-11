@@ -5,16 +5,14 @@
 //  Created by Alexander Zyryanov on 19.09.2025.
 //
 
-import Foundation
 import UIKit
 
-final class MementoManager: @unchecked Sendable {
-    static let shared: MementoManager = MementoManager()
+struct MementoManager {
     private let cache: MementoCacheProtocol
     private let loader: MementoLoaderProtocol
     
-    private init(_ cache: MementoCacheProtocol = MementoCache.shared,
-                 _ loader: MementoLoaderProtocol = MementoLoader.shared) {
+    init(_ cache: MementoCacheProtocol = MementoCache.shared,
+         _ loader: MementoLoaderProtocol = MementoLoader()) {
         self.cache = cache
         self.loader = loader
     }
@@ -24,7 +22,7 @@ final class MementoManager: @unchecked Sendable {
     }
     
     private func loadImage(from url: String) async -> UIImage? {
-        guard let cachedImage = cache.loadObject(for: url) else {
+        guard let cachedImage = await cache.get(forKey: url) else {
             return await load(from: url)
         }
         
@@ -37,7 +35,7 @@ final class MementoManager: @unchecked Sendable {
             return nil
         }
         
-        cache.saveObject(image, for: url)
+        await cache.set(image, forKey: url)
         return image
     }
 }

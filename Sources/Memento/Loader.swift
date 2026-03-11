@@ -11,11 +11,12 @@ protocol MementoLoaderProtocol {
     func fetchData(from url: String) async -> Data?
 }
 
-final class MementoLoader: @unchecked Sendable, MementoLoaderProtocol {
-    static let shared: MementoLoader = MementoLoader()
-    private let session: URLSession = URLSession(configuration: .default)
+struct MementoLoader: MementoLoaderProtocol {
+    private let session: URLSession
     
-    private init() {}
+    init(_ session: URLSession = URLSession(configuration: .default)) {
+        self.session = session
+    }
     
     func fetchData(from url: String) async -> Data? {
         guard let url = URL(string: url) else {

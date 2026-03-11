@@ -27,7 +27,7 @@ extension MementoWrapper where Base: UIImageView {
             activityIndicator.removeFromSuperview()
             
             base.alpha = 0.0
-            base.image = await MementoManager.shared.getImage(from: url)
+            base.image = await MementoManager().getImage(from: url)
             UIView.animate(withDuration: 0.3) {
                 base.alpha = 1.0
             }
