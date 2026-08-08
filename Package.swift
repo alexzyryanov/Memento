@@ -4,7 +4,10 @@ import PackageDescription
 
 let package = Package(
     name: "Memento",
-    platforms: [.iOS(.v17)],
+    platforms: [
+        .iOS(.v18),
+        .macOS(.v15)
+    ],
     products: [
         .library(
             name: "Memento",
@@ -15,5 +18,9 @@ let package = Package(
         .target(
             name: "Memento"
         ),
+        .testTarget(
+            name: "MementoTests",
+            dependencies: ["Memento"]
+        )
     ]
 )

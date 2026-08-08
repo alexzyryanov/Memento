@@ -7,18 +7,18 @@
 
 import Foundation
 
-protocol MementoLoaderProtocol {
+public protocol MementoLoaderProtocol {
     func fetchData(from url: String) async -> Data?
 }
 
-struct MementoLoader: MementoLoaderProtocol {
+public struct MementoLoader: MementoLoaderProtocol {
     private let session: URLSession
     
-    init(_ session: URLSession = URLSession(configuration: .default)) {
+    public init(_ session: URLSession = URLSession(configuration: .default)) {
         self.session = session
     }
     
-    func fetchData(from url: String) async -> Data? {
+    public func fetchData(from url: String) async -> Data? {
         guard let url = URL(string: url) else {
             return nil
         }
