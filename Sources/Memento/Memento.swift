@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import UIKit
 
 extension MementoWrapper where Base: UIImageView {
@@ -29,10 +30,15 @@ extension MementoWrapper where Base: UIImageView {
                 return
             }
             
-            let image = await MementoManager().getImage(from: url)
+            guard let image = await MementoManager().getImageData(from: url) else {
+                return
+            }
+            
             activityIndicator.stopAnimating()
             activityIndicator.removeFromSuperview()
-            base.image = image
+            base.image = UIImage(data: image)
         }
     }
 }
+
+#endif

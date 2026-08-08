@@ -5,7 +5,7 @@
 //  Created by Alexander Zyryanov on 19.09.2025.
 //
 
-import UIKit
+import Foundation
 
 struct MementoManager {
     private let cache: MementoCacheProtocol
@@ -17,11 +17,11 @@ struct MementoManager {
         self.loader = loader
     }
     
-    func getImage(from url: String) async -> UIImage? {
+    func getImageData(from url: String) async -> Data? {
         await loadImage(from: url)
     }
     
-    private func loadImage(from url: String) async -> UIImage? {
+    private func loadImage(from url: String) async -> Data? {
         guard let cachedImage = await cache.get(forKey: url) else {
             return await load(from: url)
         }
@@ -29,13 +29,12 @@ struct MementoManager {
         return cachedImage
     }
     
-    private func load(from url: String) async -> UIImage? {
-        guard let data = await loader.fetchData(from: url),
-              let image = UIImage(data: data) else {
+    private func load(from url: String) async -> Data? {
+        guard let data = await loader.fetchData(from: url) else {
             return nil
         }
         
-        await cache.set(image, forKey: url)
-        return image
+        await cache.set(data, forKey: url)
+        return data
     }
 }
