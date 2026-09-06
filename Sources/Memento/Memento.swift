@@ -42,3 +42,37 @@ extension MementoWrapper where Base: UIImageView {
 }
 
 #endif
+
+import SwiftUI
+
+public struct MementoImage: View {
+    @State private var image: Image?
+    private let url: URL?
+    
+    public init(url: URL?) {
+        self.url = url
+    }
+    
+    public var body: some View {
+        Group {
+            if let image {
+                image
+                    .resizable()
+                    .scaledToFill()
+            }
+            else {
+                ProgressView()
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .task(id: self.url) {
+            guard let url else { return }
+            do {
+                guard let data = try await MementoManager().getImageData(from: url.absoluteString),
+                      let nsImage = NSImage(data: data) else { return }
+                self.image = Image(nsImage: nsImage)
+            }
+            catch {}
+        }
+    }
+}
